@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="zh-CN" style="width: 100%; height: 100%; margin: 0; padding: 0;">
+<head>
+  <meta charset="utf-8">
+  <title>论文《全民参保迈进之路——中国基本医疗保险覆盖水平的空间分析》数据展示</title>
+
+
+  <script src="./jquery-1.11.1.min.js"></script>
+  <script src="./echarts.min.js"></script>
+  <script src="./china.js"></script>
+</head>
+<body style="width: 100%; height: 100%; margin: 0; padding: 0;">
+<div style="height: 100%; width: 100%; margin: 0; position: relative;">
+
+  <!-- Navbar -->
+  <nav style="height: 80px; text-align: center; background-color: #742674;">
+    <img src="https://xcb.njust.edu.cn/_upload/site/00/22/34/logo.png" style="top: 10%; position: relative;">
+    <div style="font-size: 36px; color: #ffffff; font-family: 黑体; display: inline-block; position: relative; top: -12%;">
+      项目数据展示
+    </div>
+  </nav>
+  <!-- /.navbar -->
+
+  <aside style="width: 20%; float: left;">
+    <div style="width: 100px; padding: 40px;">
+      <nav style="border: 10px solid #742674; background-color: #742674; border-radius: 15px; height: 300px; width: 160px;">
+        <ul style="text-align: center; display: table; margin: 0 auto; padding: 0; position: relative;top: 12%;">
+          <li style="list-style-type: none; margin-left: 5px;">
+              <select id="year" style="background-color: #ffffff; color: #000000; left: 0px; height: 40px; border-radius: 10px; top: -20px; position: relative;">
+                <option>请选择查看年份</option>
+                <option>2002</option>
+                <option>2003</option>
+                <option>2004</option>
+                <option>2005</option>
+                <option>2006</option>
+                <option>2007</option>
+                <option>2008</option>
+                <option>2009</option>
+                <option>2010</option>
+                <option>2011</option>
+                <option>2012</option>
+                <option>2013</option>
+                <option>2014</option>
+                <option>2015</option>
+                <option>2016</option>
+                <option>2017</option>
+                <option>2018</option>
+                <option>2019</option>
+                <option>2020</option>
+              </select>
+          </li>
+          <p style="text-align: left; color: #ffffff;">
+            本研究数据包括:
+          </p>
+          <p style="text-align: left; text-indent:1em; color: #ffffff;">
+              基本医疗保险参保率、基本医疗保险基金收入（单位：亿元）、基本医疗保险基金支出（单位：亿元）、基本医疗保险基金结余（单位：亿元）。
+          </p>
+        </ul>
+
+    </div>
+  </aside>
+
+  <div id="container" style="height: 650px;width:70%;background:white;float: left; padding-left: 30px;"></div>
+  <!-- Main Sidebar Container -->
+
+  <!-- /.content-wrapper -->
+  <footer style="background-color: #742674;color: #ffffff; bottom: 0%; position: fixed; width: 100%; height: 50px;">
+    <div style="position: relative; top: 25%; width: 100%; display: flex; justify-content: space-between; align-items: center;">
+        <strong style="left: 10px; position: relative;">论文《全民参保迈进之路——中国基本医疗保险覆盖水平的空间分析》数据展示 作者 谢程丹、杨羽凡 .</strong>
+        <b style="right: 10px; position: relative;">论文时间 2022/03/16</b> 
+    </div>
+  </footer>
+
+  <!-- Control Sidebar -->
+  <!-- /.control-sidebar -->
+</div>
+<!-- ./wrapper -->
+
+<script type="text/javascript">
+  // 全国省份列表
+  var dataMap = [{ name: '北京' }, { name: '天津' }, { name: '上海' }, { name: '重庆' }, { name: '河北' }, { name: '河南' }, { name: '云南' }, { name: '辽宁' }, { name: '黑龙江' }, { name: '湖南' }, { name: '安徽' }, { name: '山东' },
+  { name: '新疆' }, { name: '江苏' }, { name: '浙江' }, { name: '江西' }, { name: '湖北' }, { name: '广西' }, { name: '甘肃' }, { name: '山西' }, { name: '内蒙古' }, { name: '陕西' }, { name: '吉林' }, { name: '福建' }, { name: '贵州' },
+  { name: '广东' }, { name: '青海' }, { name: '西藏' }, { name: '四川' }, { name: '宁夏' }, { name: '海南' }, { name: '台湾' }, { name: '香港' }, { name: '澳门' }, { name: '南海诸岛' }]
+  // 需要在页面上直接标记出来的城市
+  var specialMap = [];
+  // 对dataMap进行处理，使其可以直接在页面上展示
+  for (var i = 0; i < specialMap.length; i++) {
+      for (var j = 0; j < dataMap.length; j++) {
+          if (specialMap[i] == dataMap[j].name) {
+              dataMap[j].selected = true;
+              break;
+          }
+
+      }
+  }
+  // 绘制图表，准备数据
+  var option = {
+      tooltip: {
+          formatter: function (params) {
+              var info = '<p style="font-size:18px">' + params.name + '</p><p style="font-size:14px">'+showdata(params.name)+'</p>'
+              return info;
+          },
+          backgroundColor: "#0066cc",//提示标签背景颜色
+          textStyle: { color: "#fff" } //提示标签字体颜色
+      },
+      series: [
+          {
+              name: '中国',
+              type: 'map',
+              mapType: 'china',
+              selectedMode: 'multiple',
+              label: {
+                  normal: {
+                      show: true,//显示省份标签
+                      // textStyle:{color:"#c71585"}//省份标签字体颜色
+                  },
+                  emphasis: {
+                      show: true,//对应的鼠标悬浮效果
+                      // textStyle:{color:"#800080"}
+                  }
+              },
+              itemStyle: {
+                  normal: {
+                      borderWidth: .5,//区域边框宽度
+                      // borderColor: '#009fe8',//区域边框颜色
+                      // areaColor:"#ffefd5",//区域颜色
+                  },
+                  emphasis: {
+                      borderWidth: .5,
+                      borderColor: '#4b0082',
+                      areaColor: "#ffdead",
+                  }
+              },
+              data: dataMap
+          }
+      ]
+  };
+  //初始化echarts实例
+  var myChart = echarts.init(document.getElementById('container'));
+  //使用制定的配置项和数据显示图表
+  myChart.setOption(option);
+</script>
+
+<script>
+   var _02_data = [{ name: '北京', msg: '基本医疗保险参保率22.57% 基本医疗保险基金收入41.0  基本医疗保险基金支出36.5  基本医疗保险基金结余10.9' },
+   { name: '天津', msg: '基本医疗保险参保率24.86% 基本医疗保险基金收入17.2 基本医疗保险基金支出12.5  基本医疗保险基金结余6.7' }, 
+   { name: '上海', msg: '基本医疗保险参保率42.76% 基本医疗保险基金收入90.4 基本医疗保险基金支出72.4  基本医疗保险基金结余60.7'},
+   { name: '重庆', msg: '基本医疗保险参保率1.89% 基本医疗保险基金收入3.0 基本医疗保险基金支出2.0  基本医疗保险基金结余1.9'  },
+   { name: '河北', msg: '基本医疗保险参保率4.91% 基本医疗保险基金收入16.3  基本医疗保险基金支出10.3  基本医疗保险基金结余11.7'  }, 
+   { name: '河南', msg: '基本医疗保险参保率5.59% 基本医疗保险基金收入22.6 基本医疗保险基金支出13.2  基本医疗保险基金结余17.4'  }, 
+  { name: '云南', msg: '基本医疗保险参保率5.50% 基本医疗保险基金收入21.5 基本医疗保险基金支出15.0  基本医疗保险基金结余13.9'  },
+   { name: '辽宁', msg: '基本医疗保险参保率14.73% 基本医疗保险基金收入27.1 基本医疗保险基金支出15.5 基本医疗保险基金结余19.7'  }, 
+   { name: '黑龙江', msg: '基本医疗保险参保率10.30% 基本医疗保险基金收入10.0  基本医疗保险基金支出6.3  基本医疗保险基金结余7.3'}, 
+  { name: '湖南', msg: '基本医疗保险参保率6.01% 基本医疗保险基金收入18.0  基本医疗保险基金支出12.6  基本医疗保险基金结余12.0'  },
+   { name: '安徽', msg: '基本医疗保险参保率4.31% 基本医疗保险基金收入10.6 基本医疗保险基金支出6.6  基本医疗保险基金结余8.1'  }, 
+   { name: '山东', msg: '基本医疗保险参保率6.89% 基本医疗保险基金收入34.7 基本医疗保险基金支出27.2  基本医疗保险基金结余2.0'  },
+  { name: '新疆', msg: '基本医疗保险参保率12.38% 基本医疗保险基金收入17.5 基本医疗保险基金支出12.4  基本医疗保险基金结余10.2'  }, 
+  { name: '江苏' , msg: '基本医疗保险参保率9.36% 基本医疗保险基金收入51.3 基本医疗保险基金支出35.4  基本医疗保险基金结余34.2' },
+   { name: '浙江', msg: '基本医疗保险参保率9.11% 基本医疗保险基金收入37.4 基本医疗保险基金支出20.4  基本医疗保险基金结余36.1'  }, 
+  { name: '江西', msg: '基本医疗保险参保率2.52% 基本医疗保险基金收入 基本医疗保险基金支出4.0  基本医疗保险基金结余3.3'  }, 
+  { name: '湖北', msg: '基本医疗保险参保率5.65% 基本医疗保险基金收入15.6  基本医疗保险基金支出8.1  基本医疗保险基金结余10.8'  },
+   { name: '广西', msg: '基本医疗保险参保率4.18% 基本医疗保险基金收入9.3 基本医疗保险基金支出5.3  基本医疗保险基金结余6.3'  }, 
+  { name: '甘肃', msg: '基本医疗保险参保率4.79% 基本医疗保险基金收入6.2 基本医疗保险基金支出4.6  基本医疗保险基金结余3.0'  },
+   { name: '山西', msg: '基本医疗保险参保率6.58% 基本医疗保险基金收入4.2 基本医疗保险基金支出1.6 基本医疗保险基金结余3.3'  },
+    { name: '内蒙古', msg: '基本医疗保险参保率9.32% 基本医疗保险基金收入8.1 基本医疗保险基金支出5.3  基本医疗保险基金结余3.4'}, 
+  { name: '陕西', msg: '基本医疗保险参保率7.13% 基本医疗保险基金收入6.5 基本医疗保险基金支出4.4  基本医疗保险基金结余5.3'  }, 
+  { name: '吉林', msg: '基本医疗保险参保率6.55% 基本医疗保险基金收入6.4 基本医疗保险基金支出3.2  基本医疗保险基金结余5.0'  }, 
+  { name: '福建', msg: '基本医疗保险参保率6.64% 基本医疗保险基金收入20.8 基本医疗保险基金支出12.5 基本医疗保险基金结余19.2'  }, 
+  { name: '贵州', msg: '基本医疗保险参保率2.47% 基本医疗保险基金收入3.7 基本医疗保险基金支出1.8 基本医疗保险基金结余2.4'  },
+   {name: '广东', msg: '基本医疗保险参保率9.13% 基本医疗保险基金收入0 基本医疗保险基金支出35.7  基本医疗保险基金结余82.0'   }, 
+   { name: '青海', msg: '基本医疗保险参保率9.66% 基本医疗保险基金收入3.9 基本医疗保险基金支出2.5  基本医疗保险基金结余3.8'  }, 
+  { name: '西藏', msg: '基本医疗保险参保率0% 基本医疗保险基金收入1.0 基本医疗保险基金支出0.2 基本医疗保险基金结余0.8'  }, 
+  { name: '四川', msg: '基本医疗保险参保率5.54% 基本医疗保险基金收入27.9 基本医疗保险基金支出18.3 基本医疗保险基金结余25.8'  },
+   { name: '宁夏', msg: '基本医疗保险参保率6.42% 基本医疗保险基金收入1.8 基本医疗保险基金支出1.1 基本医疗保险基金结余1.0'  }, 
+  { name: '海南', msg: '基本医疗保险参保率6.54% 基本医疗保险基金收入3.3 基本医疗保险基金支出2.5 基本医疗保险基金结余1.8'  }, 
+  { name: '台湾', msg: '暂无'  }, 
+  { name: '香港', msg: '暂无'  }, 
+  { name: '澳门', msg: '暂无'  }, 
+  { name: '南海诸岛', msg:'暂无' }];
+  var _03_data = [{ name: '北京', msg: '北京信息' }, { name: '天津', msg: '天津信息' }, { name: '上海', msg: '上海信息'},
+  { name: '重庆', msg: '重庆信息'  }, { name: '河北', msg: '河北信息'  }, { name: '河南', msg: '河南信息'  }, 
+  { name: '云南', msg: '云南信息'  }, { name: '辽宁', msg: '辽宁信息'  }, { name: '黑龙江', msg: '黑龙江信息'}, 
+  { name: '湖南', msg: '湖南信息'  }, { name: '安徽', msg: '安徽信息'  }, { name: '山东', msg: '山东信息'  },
+  { name: '新疆', msg: '新疆信息'  }, { name: '江苏' , msg: '江苏信息' }, { name: '浙江', msg: '浙江信息'  }, 
+  { name: '江西', msg: '江西信息'  }, { name: '湖北', msg: '湖北信息'  }, { name: '广西', msg: '广西信息'  }, 
+  { name: '甘肃', msg: '甘肃信息'  }, { name: '山西', msg: '山西信息'  }, { name: '内蒙古', msg: '内蒙古信息'}, 
+  { name: '陕西', msg: '陕西信息'  }, { name: '吉林', msg: '吉林信息'  }, { name: '福建', msg: '福建信息'  }, 
+  { name: '贵州', msg: '贵州信息'  }, {name: '广东', msg: '广东信息'   }, { name: '青海', msg: '青海信息'  }, 
+  { name: '西藏', msg: '西藏信息'  }, { name: '四川', msg: '四川信息'  }, { name: '宁夏', msg: '宁夏信息'  }, 
+  { name: '海南', msg: '海南信息'  }, { name: '台湾', msg: '台湾信息'  }, { name: '香港', msg: '香港信息'  }, 
+  { name: '澳门', msg: '澳门信息'  }, { name: '南海诸岛', msg:'南海诸岛信息' }];
+  var _04_data = [{ name: '北京', msg: '北京信息' }, { name: '天津', msg: '天津信息' }, { name: '上海', msg: '上海信息'},
+  { name: '重庆', msg: '重庆信息'  }, { name: '河北', msg: '河北信息'  }, { name: '河南', msg: '河南信息'  }, 
+  { name: '云南', msg: '云南信息'  }, { name: '辽宁', msg: '辽宁信息'  }, { name: '黑龙江', msg: '黑龙江信息'}, 
+  { name: '湖南', msg: '湖南信息'  }, { name: '安徽', msg: '安徽信息'  }, { name: '山东', msg: '山东信息'  },
+  { name: '新疆', msg: '新疆信息'  }, { name: '江苏' , msg: '江苏信息' }, { name: '浙江', msg: '浙江信息'  }, 
+  { name: '江西', msg: '江西信息'  }, { name: '湖北', msg: '湖北信息'  }, { name: '广西', msg: '广西信息'  }, 
+  { name: '甘肃', msg: '甘肃信息'  }, { name: '山西', msg: '山西信息'  }, { name: '内蒙古', msg: '内蒙古信息'}, 
+  { name: '陕西', msg: '陕西信息'  }, { name: '吉林', msg: '吉林信息'  }, { name: '福建', msg: '福建信息'  }, 
+  { name: '贵州', msg: '贵州信息'  }, {name: '广东', msg: '广东信息'   }, { name: '青海', msg: '青海信息'  }, 
+  { name: '西藏', msg: '西藏信息'  }, { name: '四川', msg: '四川信息'  }, { name: '宁夏', msg: '宁夏信息'  }, 
+  { name: '海南', msg: '海南信息'  }, { name: '台湾', msg: '台湾信息'  }, { name: '香港', msg: '香港信息'  }, 
+  { name: '澳门', msg: '澳门信息'  }, { name: '南海诸岛', msg:'南海诸岛信息' }];
+  var _05_data = [{ name: '北京', msg: '北京信息' }, { name: '天津', msg: '天津信息' }, { name: '上海', msg: '上海信息'},
+  { name: '重庆', msg: '重庆信息'  }, { name: '河北', msg: '河北信息'  }, { name: '河南', msg: '河南信息'  }, 
+  { name: '云南', msg: '云南信息'  }, { name: '辽宁', msg: '辽宁信息'  }, { name: '黑龙江', msg: '黑龙江信息'}, 
+  { name: '湖南', msg: '湖南信息'  }, { name: '安徽', msg: '安徽信息'  }, { name: '山东', msg: '山东信息'  },
+  { name: '新疆', msg: '新疆信息'  }, { name: '江苏' , msg: '江苏信息' }, { name: '浙江', msg: '浙江信息'  }, 
+  { name: '江西', msg: '江西信息'  }, { name: '湖北', msg: '湖北信息'  }, { name: '广西', msg: '广西信息'  }, 
+  { name: '甘肃', msg: '甘肃信息'  }, { name: '山西', msg: '山西信息'  }, { name: '内蒙古', msg: '内蒙古信息'}, 
+  { name: '陕西', msg: '陕西信息'  }, { name: '吉林', msg: '吉林信息'  }, { name: '福建', msg: '福建信息'  }, 
+  { name: '贵州', msg: '贵州信息'  }, {name: '广东', msg: '广东信息'   }, { name: '青海', msg: '青海信息'  }, 
+  { name: '西藏', msg: '西藏信息'  }, { name: '四川', msg: '四川信息'  }, { name: '宁夏', msg: '宁夏信息'  }, 
+  { name: '海南', msg: '海南信息'  }, { name: '台湾', msg: '台湾信息'  }, { name: '香港', msg: '香港信息'  }, 
+  { name: '澳门', msg: '澳门信息'  }, { name: '南海诸岛', msg:'南海诸岛信息' }];
+  var _06_data = [{ name: '北京', msg: '北京信息' }, { name: '天津', msg: '天津信息' }, { name: '上海', msg: '上海信息'},
+  { name: '重庆', msg: '重庆信息'  }, { name: '河北', msg: '河北信息'  }, { name: '河南', msg: '河南信息'  }, 
+  { name: '云南', msg: '云南信息'  }, { name: '辽宁', msg: '辽宁信息'  }, { name: '黑龙江', msg: '黑龙江信息'}, 
+  { name: '湖南', msg: '湖南信息'  }, { name: '安徽', msg: '安徽信息'  }, { name: '山东', msg: '山东信息'  },
+  { name: '新疆', msg: '新疆信息'  }, { name: '江苏' , msg: '江苏信息' }, { name: '浙江', msg: '浙江信息'  }, 
+  { name: '江西', msg: '江西信息'  }, { name: '湖北', msg: '湖北信息'  }, { name: '广西', msg: '广西信息'  }, 
+  { name: '甘肃', msg: '甘肃信息'  }, { name: '山西', msg: '山西信息'  }, { name: '内蒙古', msg: '内蒙古信息'}, 
+  { name: '陕西', msg: '陕西信息'  }, { name: '吉林', msg: '吉林信息'  }, { name: '福建', msg: '福建信息'  }, 
+  { name: '贵州', msg: '贵州信息'  }, {name: '广东', msg: '广东信息'   }, { name: '青海', msg: '青海信息'  }, 
+  { name: '西藏', msg: '西藏信息'  }, { name: '四川', msg: '四川信息'  }, { name: '宁夏', msg: '宁夏信息'  }, 
+  { name: '海南', msg: '海南信息'  }, { name: '台湾', msg: '台湾信息'  }, { name: '香港', msg: '香港信息'  }, 
+  { name: '澳门', msg: '澳门信息'  }, { name: '南海诸岛', msg:'南海诸岛信息' }];
+  var _07_data = [{ name: '北京', msg: '北京信息' }, { name: '天津', msg: '天津信息' }, { name: '上海', msg: '上海信息'},
+  { name: '重庆', msg: '重庆信息'  }, { name: '河北', msg: '河北信息'  }, { name: '河南', msg: '河南信息'  }, 
+  { name: '云南', msg: '云南信息'  }, { name: '辽宁', msg: '辽宁信息'  }, { name: '黑龙江', msg: '黑龙江信息'}, 
+  { name: '湖南', msg: '湖南信息'  }, { name: '安徽', msg: '安徽信息'  }, { name: '山东', msg: '山东信息'  },
+  { name: '新疆', msg: '新疆信息'  }, { name: '江苏' , msg: '江苏信息' }, { name: '浙江', msg: '浙江信息'  }, 
+  { name: '江西', msg: '江西信息'  }, { name: '湖北', msg: '湖北信息'  }, { name: '广西', msg: '广西信息'  }, 
+  { name: '甘肃', msg: '甘肃信息'  }, { name: '山西', msg: '山西信息'  }, { name: '内蒙古', msg: '内蒙古信息'}, 
+  { name: '陕西', msg: '陕西信息'  }, { name: '吉林', msg: '吉林信息'  }, { name: '福建', msg: '福建信息'  }, 
+  { name: '贵州', msg: '贵州信息'  }, {name: '广东', msg: '广东信息'   }, { name: '青海', msg: '青海信息'  }, 
+  { name: '西藏', msg: '西藏信息'  }, { name: '四川', msg: '四川信息'  }, { name: '宁夏', msg: '宁夏信息'  }, 
+  { name: '海南', msg: '海南信息'  }, { name: '台湾', msg: '台湾信息'  }, { name: '香港', msg: '香港信息'  }, 
+  { name: '澳门', msg: '澳门信息'  }, { name: '南海诸岛', msg:'南海诸岛信息' }];
+  var _08_data = [{ name: '北京', msg: '北京信息' }, { name: '天津', msg: '天津信息' }, { name: '上海', msg: '上海信息'},
+  { name: '重庆', msg: '重庆信息'  }, { name: '河北', msg: '河北信息'  }, { name: '河南', msg: '河南信息'  }, 
+  { name: '云南', msg: '云南信息'  }, { name: '辽宁', msg: '辽宁信息'  }, { name: '黑龙江', msg: '黑龙江信息'}, 
+  { name: '湖南', msg: '湖南信息'  }, { name: '安徽', msg: '安徽信息'  }, { name: '山东', msg: '山东信息'  },
+  { name: '新疆', msg: '新疆信息'  }, { name: '江苏' , msg: '江苏信息' }, { name: '浙江', msg: '浙江信息'  }, 
+  { name: '江西', msg: '江西信息'  }, { name: '湖北', msg: '湖北信息'  }, { name: '广西', msg: '广西信息'  }, 
+  { name: '甘肃', msg: '甘肃信息'  }, { name: '山西', msg: '山西信息'  }, { name: '内蒙古', msg: '内蒙古信息'}, 
+  { name: '陕西', msg: '陕西信息'  }, { name: '吉林', msg: '吉林信息'  }, { name: '福建', msg: '福建信息'  }, 
+  { name: '贵州', msg: '贵州信息'  }, {name: '广东', msg: '广东信息'   }, { name: '青海', msg: '青海信息'  }, 
+  { name: '西藏', msg: '西藏信息'  }, { name: '四川', msg: '四川信息'  }, { name: '宁夏', msg: '宁夏信息'  }, 
+  { name: '海南', msg: '海南信息'  }, { name: '台湾', msg: '台湾信息'  }, { name: '香港', msg: '香港信息'  }, 
+  { name: '澳门', msg: '澳门信息'  }, { name: '南海诸岛', msg:'南海诸岛信息' }];
+  var _09_data = [{ name: '北京', msg: '北京信息' }, { name: '天津', msg: '天津信息' }, { name: '上海', msg: '上海信息'},
+  { name: '重庆', msg: '重庆信息'  }, { name: '河北', msg: '河北信息'  }, { name: '河南', msg: '河南信息'  }, 
+  { name: '云南', msg: '云南信息'  }, { name: '辽宁', msg: '辽宁信息'  }, { name: '黑龙江', msg: '黑龙江信息'}, 
+  { name: '湖南', msg: '湖南信息'  }, { name: '安徽', msg: '安徽信息'  }, { name: '山东', msg: '山东信息'  },
+  { name: '新疆', msg: '新疆信息'  }, { name: '江苏' , msg: '江苏信息' }, { name: '浙江', msg: '浙江信息'  }, 
+  { name: '江西', msg: '江西信息'  }, { name: '湖北', msg: '湖北信息'  }, { name: '广西', msg: '广西信息'  }, 
+  { name: '甘肃', msg: '甘肃信息'  }, { name: '山西', msg: '山西信息'  }, { name: '内蒙古', msg: '内蒙古信息'}, 
+  { name: '陕西', msg: '陕西信息'  }, { name: '吉林', msg: '吉林信息'  }, { name: '福建', msg: '福建信息'  }, 
+  { name: '贵州', msg: '贵州信息'  }, {name: '广东', msg: '广东信息'   }, { name: '青海', msg: '青海信息'  }, 
+  { name: '西藏', msg: '西藏信息'  }, { name: '四川', msg: '四川信息'  }, { name: '宁夏', msg: '宁夏信息'  }, 
+  { name: '海南', msg: '海南信息'  }, { name: '台湾', msg: '台湾信息'  }, { name: '香港', msg: '香港信息'  }, 
+  { name: '澳门', msg: '澳门信息'  }, { name: '南海诸岛', msg:'南海诸岛信息' }];
+  var _10_data = [{ name: '北京', msg: '北京信息' }, { name: '天津', msg: '天津信息' }, { name: '上海', msg: '上海信息'},
+  { name: '重庆', msg: '重庆信息'  }, { name: '河北', msg: '河北信息'  }, { name: '河南', msg: '河南信息'  }, 
+  { name: '云南', msg: '云南信息'  }, { name: '辽宁', msg: '辽宁信息'  }, { name: '黑龙江', msg: '黑龙江信息'}, 
+  { name: '湖南', msg: '湖南信息'  }, { name: '安徽', msg: '安徽信息'  }, { name: '山东', msg: '山东信息'  },
+  { name: '新疆', msg: '新疆信息'  }, { name: '江苏' , msg: '江苏信息' }, { name: '浙江', msg: '浙江信息'  }, 
+  { name: '江西', msg: '江西信息'  }, { name: '湖北', msg: '湖北信息'  }, { name: '广西', msg: '广西信息'  }, 
+  { name: '甘肃', msg: '甘肃信息'  }, { name: '山西', msg: '山西信息'  }, { name: '内蒙古', msg: '内蒙古信息'}, 
+  { name: '陕西', msg: '陕西信息'  }, { name: '吉林', msg: '吉林信息'  }, { name: '福建', msg: '福建信息'  }, 
+  { name: '贵州', msg: '贵州信息'  }, {name: '广东', msg: '广东信息'   }, { name: '青海', msg: '青海信息'  }, 
+  { name: '西藏', msg: '西藏信息'  }, { name: '四川', msg: '四川信息'  }, { name: '宁夏', msg: '宁夏信息'  }, 
+  { name: '海南', msg: '海南信息'  }, { name: '台湾', msg: '台湾信息'  }, { name: '香港', msg: '香港信息'  }, 
+  { name: '澳门', msg: '澳门信息'  }, { name: '南海诸岛', msg:'南海诸岛信息' }];
+  var _11_data = [{ name: '北京', msg: '基本医疗保险参保率66.76% 基本医疗保险基金收入812.8 基本医疗保险基金支出381.9 基本医疗保险基金结余200.7' }, 
+  { name: '天津', msg: '基本医疗保险参保率71.79% 基本医疗保险基金收入335.8 基本医疗保险基金支出123.4 基本医疗保险基金结余58.4' },
+   { name: '上海', msg: '基本医疗保险参保率67.82% 基本医疗保险基金收入1089.2 基本医疗保险基金支出335.6 基本医疗保险基金结余297.9'},
+  { name: '重庆', msg: '基本医疗保险参保率45.39% 基本医疗保险基金收入415.3 基本医疗保险基金支出80.6 基本医疗保险基金结余115.1'  },
+   { name: '河北', msg: '基本医疗保险参保率21.57% 基本医疗保险基金收入684.4 基本医疗保险基金支出143.3 基本医疗保险基金结余234.6'  },
+    { name: '河南', msg: '基本医疗保险参保率22.61% 基本医疗保险基金收入602.8 基本医疗保险基金支出132.3 基本医疗保险基金结余201.2'  }, 
+  { name: '云南', msg: '基本医疗保险参保率18.70% 基本医疗保险基金收入277.3 基本医疗保险基金支出96.7 基本医疗保险基金结余130.3'  },
+   { name: '辽宁', msg: '基本医疗保险参保率48.37% 基本医疗保险基金收入1039.0 基本医疗保险基金支出 基本医疗保险基金结余281.3'  },
+    { name: '黑龙江', msg: '基本医疗保险参保率41.16% 基本医疗保险基金收入591.5 基本医疗保险基金支出227.9 基本医疗保险基金结余225.1'}, 
+  { name: '湖南', msg: '基本医疗保险参保率29.43% 基本医疗保险基金收入541.6 基本医疗保险基金支出127.6 基本医疗保险基金结余167.0'  },
+   { name: '安徽', msg: '基本医疗保险参保率27.03% 基本医疗保险基金收入445.3 基本医疗保险基金支出105.9 基本医疗保险基金结余151.7'  }, 
+   { name: '山东', msg: '基本医疗保险参保率30.59% 基本医疗保险基金收入1191.1 基本医疗保险基金支出279.3 基本医疗保险基金结余326.3'  },
+  { name: '新疆', msg: '基本医疗保险参保率37.36% 基本医疗保险基金收入352.9 基本医疗保险基金支出99.2 基本医疗保险基金结余201.2'  }, 
+  { name: '江苏' , msg: '基本医疗保险参保率44.32% 基本医疗保险基金收入1284.9 基本医疗保险基金支出367.5 基本医疗保险基金结余553.2' }, 
+  { name: '浙江', msg: '基本医疗保险参保率41.08% 基本医疗保险基金收入901.2 基本医疗保险基金支出271.7 基本医疗保险基金结余472.9'  }, 
+  { name: '江西', msg: '基本医疗保险参保率29.63% 基本医疗保险基金收入276.0 基本医疗保险基金支出60.6 基本医疗保险基金结余103.5'  },
+   { name: '湖北', msg: '基本医疗保险参保率33.56% 基本医疗保险基金收入733.9 基本医疗保险基金支出136.4 基本医疗保险基金结余199.2'  },
+    { name: '广西', msg: '基本医疗保险参保率21.13% 基本医疗保险基金收入278.6 基本医疗保险基金支出76.6 基本医疗保险基金结余158.0'  }, 
+  { name: '甘肃', msg: '基本医疗保险参保率23.04% 基本医疗保险基金收入223.4 基本医疗保险基金支出50.7 基本医疗保险基金结余64.3'  },
+   { name: '山西', msg: '基本医疗保险参保率27.97% 基本医疗保险基金收入483.9 基本医疗保险基金支出89.0 基本医疗保险基金结余139.9'  },
+    { name: '内蒙古', msg: '基本医疗保险参保率36.56% 基本医疗保险基金收入355.4 基本医疗保险基金支出85.5 基本医疗保险基金结余101.9'}, 
+  { name: '陕西', msg: '基本医疗保险参保率29.13% 基本医疗保险基金收入368.1 基本医疗保险基金支出78.4 基本医疗保险基金结余128.6'  }, 
+  { name: '吉林', msg: '基本医疗保险参保率49.13% 基本医疗保险基金收入350.4 基本医疗保险基金支出68.1 基本医疗保险基金结余123.5'  }, 
+  { name: '福建', msg: '基本医疗保险参保率32.72% 基本医疗保险基金收入266.2 基本医疗保险基金支出107.8 基本医疗保险基金结余204.8'  }, 
+  { name: '贵州', msg: '基本医疗保险参保率18.13% 基本医疗保险基金收入179.2 基本医疗保险基金支出48.7 基本医疗保险基金结余71.7'  }, 
+  {name: '广东', msg: '基本医疗保险参保率64.42% 基本医疗保险基金收入1400.3 基本医疗保险基金支出429.8 基本医疗保险基金结余872.6'   }, 
+  { name: '青海', msg: '基本医疗保险参保率26.69% 基本医疗保险基金收入75.0 基本医疗保险基金支出24.1 基本医疗保险基金结余39.9'  }, 
+  { name: '西藏', msg: '基本医疗保险参保率14.42% 基本医疗保险基金收入15.5 基本医疗保险基金支出7.7 基本医疗保险基金结余15.9'  }, 
+  { name: '四川', msg: '基本医疗保险参保率27.93% 基本医疗保险基金收入1085.6 基本医疗保险基金支出219.6 基本医疗保险基金结余363.2'  }, 
+  { name: '宁夏', msg: '基本医疗保险参保率29.55% 基本医疗保险基金收入113.2 基本医疗保险基金支出19.0  基本医疗保险基金结余26.8'  }, 
+  { name: '海南', msg: '基本医疗保险参保率40.18% 基本医疗保险基金收入115.7 基本医疗保险基金支出26.8 基本医疗保险基金结余39.1'  },
+   { name: '台湾', msg: '暂无'  }, 
+   { name: '香港', msg: '暂无'  }, 
+  { name: '澳门', msg: '暂无'  }, 
+  { name: '南海诸岛', msg:'暂无' }];
+  var _12_data = [{ name: '北京', msg: '北京信息' }, { name: '天津', msg: '天津信息' }, { name: '上海', msg: '上海信息'},
+  { name: '重庆', msg: '重庆信息'  }, { name: '河北', msg: '河北信息'  }, { name: '河南', msg: '河南信息'  }, 
+  { name: '云南', msg: '云南信息'  }, { name: '辽宁', msg: '辽宁信息'  }, { name: '黑龙江', msg: '黑龙江信息'}, 
+  { name: '湖南', msg: '湖南信息'  }, { name: '安徽', msg: '安徽信息'  }, { name: '山东', msg: '山东信息'  },
+  { name: '新疆', msg: '新疆信息'  }, { name: '江苏' , msg: '江苏信息' }, { name: '浙江', msg: '浙江信息'  }, 
+  { name: '江西', msg: '江西信息'  }, { name: '湖北', msg: '湖北信息'  }, { name: '广西', msg: '广西信息'  }, 
+  { name: '甘肃', msg: '甘肃信息'  }, { name: '山西', msg: '山西信息'  }, { name: '内蒙古', msg: '内蒙古信息'}, 
+  { name: '陕西', msg: '陕西信息'  }, { name: '吉林', msg: '吉林信息'  }, { name: '福建', msg: '福建信息'  }, 
+  { name: '贵州', msg: '贵州信息'  }, {name: '广东', msg: '广东信息'   }, { name: '青海', msg: '青海信息'  }, 
+  { name: '西藏', msg: '西藏信息'  }, { name: '四川', msg: '四川信息'  }, { name: '宁夏', msg: '宁夏信息'  }, 
+  { name: '海南', msg: '海南信息'  }, { name: '台湾', msg: '台湾信息'  }, { name: '香港', msg: '香港信息'  }, 
+  { name: '澳门', msg: '澳门信息'  }, { name: '南海诸岛', msg:'南海诸岛信息' }];
+  var _13_data = [{ name: '北京', msg: '北京信息' }, { name: '天津', msg: '天津信息' }, { name: '上海', msg: '上海信息'},
+  { name: '重庆', msg: '重庆信息'  }, { name: '河北', msg: '河北信息'  }, { name: '河南', msg: '河南信息'  }, 
+  { name: '云南', msg: '云南信息'  }, { name: '辽宁', msg: '辽宁信息'  }, { name: '黑龙江', msg: '黑龙江信息'}, 
+  { name: '湖南', msg: '湖南信息'  }, { name: '安徽', msg: '安徽信息'  }, { name: '山东', msg: '山东信息'  },
+  { name: '新疆', msg: '新疆信息'  }, { name: '江苏' , msg: '江苏信息' }, { name: '浙江', msg: '浙江信息'  }, 
+  { name: '江西', msg: '江西信息'  }, { name: '湖北', msg: '湖北信息'  }, { name: '广西', msg: '广西信息'  }, 
+  { name: '甘肃', msg: '甘肃信息'  }, { name: '山西', msg: '山西信息'  }, { name: '内蒙古', msg: '内蒙古信息'}, 
+  { name: '陕西', msg: '陕西信息'  }, { name: '吉林', msg: '吉林信息'  }, { name: '福建', msg: '福建信息'  }, 
+  { name: '贵州', msg: '贵州信息'  }, {name: '广东', msg: '广东信息'   }, { name: '青海', msg: '青海信息'  }, 
+  { name: '西藏', msg: '西藏信息'  }, { name: '四川', msg: '四川信息'  }, { name: '宁夏', msg: '宁夏信息'  }, 
+  { name: '海南', msg: '海南信息'  }, { name: '台湾', msg: '台湾信息'  }, { name: '香港', msg: '香港信息'  }, 
+  { name: '澳门', msg: '澳门信息'  }, { name: '南海诸岛', msg:'南海诸岛信息' }];
+  var _14_data = [{ name: '北京', msg: '北京信息' }, { name: '天津', msg: '天津信息' }, { name: '上海', msg: '上海信息'},
+  { name: '重庆', msg: '重庆信息'  }, { name: '河北', msg: '河北信息'  }, { name: '河南', msg: '河南信息'  }, 
+  { name: '云南', msg: '云南信息'  }, { name: '辽宁', msg: '辽宁信息'  }, { name: '黑龙江', msg: '黑龙江信息'}, 
+  { name: '湖南', msg: '湖南信息'  }, { name: '安徽', msg: '安徽信息'  }, { name: '山东', msg: '山东信息'  },
+  { name: '新疆', msg: '新疆信息'  }, { name: '江苏' , msg: '江苏信息' }, { name: '浙江', msg: '浙江信息'  }, 
+  { name: '江西', msg: '江西信息'  }, { name: '湖北', msg: '湖北信息'  }, { name: '广西', msg: '广西信息'  }, 
+  { name: '甘肃', msg: '甘肃信息'  }, { name: '山西', msg: '山西信息'  }, { name: '内蒙古', msg: '内蒙古信息'}, 
+  { name: '陕西', msg: '陕西信息'  }, { name: '吉林', msg: '吉林信息'  }, { name: '福建', msg: '福建信息'  }, 
+  { name: '贵州', msg: '贵州信息'  }, {name: '广东', msg: '广东信息'   }, { name: '青海', msg: '青海信息'  }, 
+  { name: '西藏', msg: '西藏信息'  }, { name: '四川', msg: '四川信息'  }, { name: '宁夏', msg: '宁夏信息'  }, 
+  { name: '海南', msg: '海南信息'  }, { name: '台湾', msg: '台湾信息'  }, { name: '香港', msg: '香港信息'  }, 
+  { name: '澳门', msg: '澳门信息'  }, { name: '南海诸岛', msg:'南海诸岛信息' }];
+  var _15_data = [{ name: '北京', msg: '北京信息' }, { name: '天津', msg: '天津信息' }, { name: '上海', msg: '上海信息'},
+  { name: '重庆', msg: '重庆信息'  }, { name: '河北', msg: '河北信息'  }, { name: '河南', msg: '河南信息'  }, 
+  { name: '云南', msg: '云南信息'  }, { name: '辽宁', msg: '辽宁信息'  }, { name: '黑龙江', msg: '黑龙江信息'}, 
+  { name: '湖南', msg: '湖南信息'  }, { name: '安徽', msg: '安徽信息'  }, { name: '山东', msg: '山东信息'  },
+  { name: '新疆', msg: '新疆信息'  }, { name: '江苏' , msg: '江苏信息' }, { name: '浙江', msg: '浙江信息'  }, 
+  { name: '江西', msg: '江西信息'  }, { name: '湖北', msg: '湖北信息'  }, { name: '广西', msg: '广西信息'  }, 
+  { name: '甘肃', msg: '甘肃信息'  }, { name: '山西', msg: '山西信息'  }, { name: '内蒙古', msg: '内蒙古信息'}, 
+  { name: '陕西', msg: '陕西信息'  }, { name: '吉林', msg: '吉林信息'  }, { name: '福建', msg: '福建信息'  }, 
+  { name: '贵州', msg: '贵州信息'  }, {name: '广东', msg: '广东信息'   }, { name: '青海', msg: '青海信息'  }, 
+  { name: '西藏', msg: '西藏信息'  }, { name: '四川', msg: '四川信息'  }, { name: '宁夏', msg: '宁夏信息'  }, 
+  { name: '海南', msg: '海南信息'  }, { name: '台湾', msg: '台湾信息'  }, { name: '香港', msg: '香港信息'  }, 
+  { name: '澳门', msg: '澳门信息'  }, { name: '南海诸岛', msg:'南海诸岛信息' }];
+  var _16_data = [{ name: '北京', msg: '北京信息' }, { name: '天津', msg: '天津信息' }, { name: '上海', msg: '上海信息'},
+  { name: '重庆', msg: '重庆信息'  }, { name: '河北', msg: '河北信息'  }, { name: '河南', msg: '河南信息'  }, 
+  { name: '云南', msg: '云南信息'  }, { name: '辽宁', msg: '辽宁信息'  }, { name: '黑龙江', msg: '黑龙江信息'}, 
+  { name: '湖南', msg: '湖南信息'  }, { name: '安徽', msg: '安徽信息'  }, { name: '山东', msg: '山东信息'  },
+  { name: '新疆', msg: '新疆信息'  }, { name: '江苏' , msg: '江苏信息' }, { name: '浙江', msg: '浙江信息'  }, 
+  { name: '江西', msg: '江西信息'  }, { name: '湖北', msg: '湖北信息'  }, { name: '广西', msg: '广西信息'  }, 
+  { name: '甘肃', msg: '甘肃信息'  }, { name: '山西', msg: '山西信息'  }, { name: '内蒙古', msg: '内蒙古信息'}, 
+  { name: '陕西', msg: '陕西信息'  }, { name: '吉林', msg: '吉林信息'  }, { name: '福建', msg: '福建信息'  }, 
+  { name: '贵州', msg: '贵州信息'  }, {name: '广东', msg: '广东信息'   }, { name: '青海', msg: '青海信息'  }, 
+  { name: '西藏', msg: '西藏信息'  }, { name: '四川', msg: '四川信息'  }, { name: '宁夏', msg: '宁夏信息'  }, 
+  { name: '海南', msg: '海南信息'  }, { name: '台湾', msg: '台湾信息'  }, { name: '香港', msg: '香港信息'  }, 
+  { name: '澳门', msg: '澳门信息'  }, { name: '南海诸岛', msg:'南海诸岛信息' }];
+  var _17_data = [{ name: '北京', msg: '北京信息' }, { name: '天津', msg: '天津信息' }, { name: '上海', msg: '上海信息'},
+  { name: '重庆', msg: '重庆信息'  }, { name: '河北', msg: '河北信息'  }, { name: '河南', msg: '河南信息'  }, 
+  { name: '云南', msg: '云南信息'  }, { name: '辽宁', msg: '辽宁信息'  }, { name: '黑龙江', msg: '黑龙江信息'}, 
+  { name: '湖南', msg: '湖南信息'  }, { name: '安徽', msg: '安徽信息'  }, { name: '山东', msg: '山东信息'  },
+  { name: '新疆', msg: '新疆信息'  }, { name: '江苏' , msg: '江苏信息' }, { name: '浙江', msg: '浙江信息'  }, 
+  { name: '江西', msg: '江西信息'  }, { name: '湖北', msg: '湖北信息'  }, { name: '广西', msg: '广西信息'  }, 
+  { name: '甘肃', msg: '甘肃信息'  }, { name: '山西', msg: '山西信息'  }, { name: '内蒙古', msg: '内蒙古信息'}, 
+  { name: '陕西', msg: '陕西信息'  }, { name: '吉林', msg: '吉林信息'  }, { name: '福建', msg: '福建信息'  }, 
+  { name: '贵州', msg: '贵州信息'  }, {name: '广东', msg: '广东信息'   }, { name: '青海', msg: '青海信息'  }, 
+  { name: '西藏', msg: '西藏信息'  }, { name: '四川', msg: '四川信息'  }, { name: '宁夏', msg: '宁夏信息'  }, 
+  { name: '海南', msg: '海南信息'  }, { name: '台湾', msg: '台湾信息'  }, { name: '香港', msg: '香港信息'  }, 
+  { name: '澳门', msg: '澳门信息'  }, { name: '南海诸岛', msg:'南海诸岛信息' }];
+  var _18_data = [{ name: '北京', msg: '北京信息' }, { name: '天津', msg: '天津信息' }, { name: '上海', msg: '上海信息'},
+  { name: '重庆', msg: '重庆信息'  }, { name: '河北', msg: '河北信息'  }, { name: '河南', msg: '河南信息'  }, 
+  { name: '云南', msg: '云南信息'  }, { name: '辽宁', msg: '辽宁信息'  }, { name: '黑龙江', msg: '黑龙江信息'}, 
+  { name: '湖南', msg: '湖南信息'  }, { name: '安徽', msg: '安徽信息'  }, { name: '山东', msg: '山东信息'  },
+  { name: '新疆', msg: '新疆信息'  }, { name: '江苏' , msg: '江苏信息' }, { name: '浙江', msg: '浙江信息'  }, 
+  { name: '江西', msg: '江西信息'  }, { name: '湖北', msg: '湖北信息'  }, { name: '广西', msg: '广西信息'  }, 
+  { name: '甘肃', msg: '甘肃信息'  }, { name: '山西', msg: '山西信息'  }, { name: '内蒙古', msg: '内蒙古信息'}, 
+  { name: '陕西', msg: '陕西信息'  }, { name: '吉林', msg: '吉林信息'  }, { name: '福建', msg: '福建信息'  }, 
+  { name: '贵州', msg: '贵州信息'  }, {name: '广东', msg: '广东信息'   }, { name: '青海', msg: '青海信息'  }, 
+  { name: '西藏', msg: '西藏信息'  }, { name: '四川', msg: '四川信息'  }, { name: '宁夏', msg: '宁夏信息'  }, 
+  { name: '海南', msg: '海南信息'  }, { name: '台湾', msg: '台湾信息'  }, { name: '香港', msg: '香港信息'  }, 
+  { name: '澳门', msg: '澳门信息'  }, { name: '南海诸岛', msg:'南海诸岛信息' }];
+  var _19_data = [{ name: '北京', msg: '北京信息' }, { name: '天津', msg: '天津信息' }, { name: '上海', msg: '上海信息'},
+  { name: '重庆', msg: '重庆信息'  }, { name: '河北', msg: '河北信息'  }, { name: '河南', msg: '河南信息'  }, 
+  { name: '云南', msg: '云南信息'  }, { name: '辽宁', msg: '辽宁信息'  }, { name: '黑龙江', msg: '黑龙江信息'}, 
+  { name: '湖南', msg: '湖南信息'  }, { name: '安徽', msg: '安徽信息'  }, { name: '山东', msg: '山东信息'  },
+  { name: '新疆', msg: '新疆信息'  }, { name: '江苏' , msg: '江苏信息' }, { name: '浙江', msg: '浙江信息'  }, 
+  { name: '江西', msg: '江西信息'  }, { name: '湖北', msg: '湖北信息'  }, { name: '广西', msg: '广西信息'  }, 
+  { name: '甘肃', msg: '甘肃信息'  }, { name: '山西', msg: '山西信息'  }, { name: '内蒙古', msg: '内蒙古信息'}, 
+  { name: '陕西', msg: '陕西信息'  }, { name: '吉林', msg: '吉林信息'  }, { name: '福建', msg: '福建信息'  }, 
+  { name: '贵州', msg: '贵州信息'  }, {name: '广东', msg: '广东信息'   }, { name: '青海', msg: '青海信息'  }, 
+  { name: '西藏', msg: '西藏信息'  }, { name: '四川', msg: '四川信息'  }, { name: '宁夏', msg: '宁夏信息'  }, 
+  { name: '海南', msg: '海南信息'  }, { name: '台湾', msg: '台湾信息'  }, { name: '香港', msg: '香港信息'  }, 
+  { name: '澳门', msg: '澳门信息'  }, { name: '南海诸岛', msg:'南海诸岛信息' }];
+  var _20_data = [{ name: '北京', msg: '基本医疗保险参保率97% 基本医疗保险基金收入1491.3 基本医疗保险基金支出1246.3 基本医疗保险基金结余1354' },
+   { name: '天津', msg: '基本医疗保险参保率94% 基本医疗保险基金收入370.4 基本医疗保险基金支出340.4 基本医疗保险基金结余413.1' },
+    { name: '上海', msg: '基本医疗保险参保率97% 基本医疗保险基金收入1318.0 基本医疗保险基金支出1041.8 基本医疗保险基金结余3208'},
+  { name: '重庆', msg: '基本医疗保险参保率96% 基本医疗保险基金收入539.9 基本医疗保险基金支出469.7 基本医疗保险基金结余515.0'  }, 
+  { name: '河北', msg: '基本医疗保险参保率94% 基本医疗保险基金收入998.4 基本医疗保险基金支出868.9 基本医疗保险基金结余1183'  },
+   { name: '河南', msg: '基本医疗保险参保率96% 基本医疗保险基金收入1224.4 基本医疗保险基金支出1106.6 基本医疗保险基金结余1054'  }, 
+  { name: '云南', msg: '基本医疗保险参保率95% 基本医疗保险基金收入685.2 基本医疗保险基金支出571.1 基本医疗保险基金结余733.7'  },
+   { name: '辽宁', msg: '基本医疗保险参保率94% 基本医疗保险基金收入757.7 基本医疗保险基金支出626.9 基本医疗保险基金结余769.7'  },
+    { name: '黑龙江', msg: '基本医疗保险参保率93% 基本医疗保险基金收入545.5 基本医疗保险基金支出414.7 基本医疗保险基金结余708.2'}, 
+  { name: '湖南', msg: '基本医疗保险参保率96% 基本医疗保险基金收入894.9 基本医疗保险基金支出800.1 基本医疗保险基金结余910.7'  },
+   { name: '安徽', msg: '基本医疗保险参保率99% 基本医疗保险基金收入803.1 基本医疗保险基金支出735.4 基本医疗保险基金结余778.6'  }, 
+   { name: '山东', msg: '基本医疗保险参保率96% 基本医疗保险基金收入1585.1 基本医疗保险基金支出1457.1 基本医疗保险基金结余1666'  },
+  { name: '新疆', msg: '基本医疗保险参保率91% 基本医疗保险基金收入477.9 基本医疗保险基金支出383.7 基本医疗保险基金结余688.6'  },
+   { name: '江苏' , msg: '基本医疗保险参保率98% 基本医疗保险基金收入1798.5 基本医疗保险基金支出1584.9 基本医疗保险基金结余2304' },
+    { name: '浙江', msg: '基本医疗保险参保率95% 基本医疗保险基金收入1697.8 基本医疗保险基金支出1343.0  基本医疗保险基金结余2463'  }, 
+  { name: '江西', msg: '基本医疗保险参保率94% 基本医疗保险基金收入623.8 基本医疗保险基金支出555.8 基本医疗保险基金结余675.6'  }, 
+  { name: '湖北', msg: '基本医疗保险参保率95% 基本医疗保险基金收入943.9 基本医疗保险基金支出780.2 基本医疗保险基金结余933.7'  }, 
+  { name: '广西', msg: '基本医疗保险参保率95% 基本医疗保险基金收入680.9 基本医疗保险基金支出607.4 基本医疗保险基金结余860.2'  }, 
+  { name: '甘肃', msg: '基本医疗保险参保率97% 基本医疗保险基金收入343.3 基本医疗保险基金支出283.9 基本医疗保险基金结余292.5'  },
+   { name: '山西', msg: '基本医疗保险参保率94% 基本医疗保险基金收入497.9 基本医疗保险基金支出438.2 基本医疗保险基金结余567.6'  },
+    { name: '内蒙古', msg: '基本医疗保险参保率95% 基本医疗保险基金收入396.8 基本医疗保险基金支出310.1 基本医疗保险基金结余506.6'}, 
+  { name: '陕西', msg: '基本医疗保险参保率95% 基本医疗保险基金收入630.7 基本医疗保险基金支出469.6 基本医疗保险基金结余704.8'  }, 
+  { name: '吉林', msg: '基本医疗保险参保率95% 基本医疗保险基金收入353.1 基本医疗保险基金支出273.8 基本医疗保险基金结余480.6'  }, 
+  { name: '福建', msg: '基本医疗保险参保率95% 基本医疗保险基金收入624.8 基本医疗保险基金支出554.5 基本医疗保险基金结余866.9'  }, 
+  { name: '贵州', msg: '基本医疗保险参保率92% 基本医疗保险基金收入534.3 基本医疗保险基金支出431.1 基本医疗保险基金结余548.3'  },
+   {name: '广东', msg: '基本医疗保险参保率98% 基本医疗保险基金收入2205.6 基本医疗保险基金支出1870.0 基本医疗保险基金结余186.3'   },
+    { name: '青海', msg: '基本医疗保险参保率95% 基本医疗保险基金收入126.1 基本医疗保险基金支出96.8 基本医疗保险基金结余186.3'  }, 
+  { name: '西藏', msg: '基本医疗保险参保率95% 基本医疗保险基金收入66.4 基本医疗保险基金支出32.9 基本医疗保险基金结余147.7'  },
+   { name: '四川', msg: '基本医疗保险参保率96% 基本医疗保险基金收入1356.5 基本医疗保险基金支出1107.5 基本医疗保险基金结余1943'  }, 
+   { name: '宁夏', msg: '基本医疗保险参保率95% 基本医疗保险基金收入121.3 基本医疗保险基金支出99.5 基本医疗保险基金结余152.0'  }, 
+  { name: '海南', msg: '基本医疗保险参保率 基本医疗保险基金收入152.5 基本医疗保险基金支出130.3 基本医疗保险基金结余222.1'  },
+   { name: '台湾', msg: '暂无'  }, 
+   { name: '香港', msg: '暂无'  }, 
+  { name: '澳门', msg: '暂无'  }, 
+  { name: '南海诸岛', msg:'暂无' }];
+  var _21_data = [{ name: '北京', msg: '北京信息' }, { name: '天津', msg: '天津信息' }, { name: '上海', msg: '上海信息'},
+  { name: '重庆', msg: '重庆信息'  }, { name: '河北', msg: '河北信息'  }, { name: '河南', msg: '河南信息'  }, 
+  { name: '云南', msg: '云南信息'  }, { name: '辽宁', msg: '辽宁信息'  }, { name: '黑龙江', msg: '黑龙江信息'}, 
+  { name: '湖南', msg: '湖南信息'  }, { name: '安徽', msg: '安徽信息'  }, { name: '山东', msg: '山东信息'  },
+  { name: '新疆', msg: '新疆信息'  }, { name: '江苏' , msg: '江苏信息' }, { name: '浙江', msg: '浙江信息'  }, 
+  { name: '江西', msg: '江西信息'  }, { name: '湖北', msg: '湖北信息'  }, { name: '广西', msg: '广西信息'  }, 
+  { name: '甘肃', msg: '甘肃信息'  }, { name: '山西', msg: '山西信息'  }, { name: '内蒙古', msg: '内蒙古信息'}, 
+  { name: '陕西', msg: '陕西信息'  }, { name: '吉林', msg: '吉林信息'  }, { name: '福建', msg: '福建信息'  }, 
+  { name: '贵州', msg: '贵州信息'  }, {name: '广东', msg: '广东信息'   }, { name: '青海', msg: '青海信息'  }, 
+  { name: '西藏', msg: '西藏信息'  }, { name: '四川', msg: '四川信息'  }, { name: '宁夏', msg: '宁夏信息'  }, 
+  { name: '海南', msg: '海南信息'  }, { name: '台湾', msg: '台湾信息'  }, { name: '香港', msg: '香港信息'  }, 
+  { name: '澳门', msg: '澳门信息'  }, { name: '南海诸岛', msg:'南海诸岛信息' }];
+  var _22_data = [{ name: '北京', msg: '北京信息' }, { name: '天津', msg: '天津信息' }, { name: '上海', msg: '上海信息'},
+  { name: '重庆', msg: '重庆信息'  }, { name: '河北', msg: '河北信息'  }, { name: '河南', msg: '河南信息'  }, 
+  { name: '云南', msg: '云南信息'  }, { name: '辽宁', msg: '辽宁信息'  }, { name: '黑龙江', msg: '黑龙江信息'}, 
+  { name: '湖南', msg: '湖南信息'  }, { name: '安徽', msg: '安徽信息'  }, { name: '山东', msg: '山东信息'  },
+  { name: '新疆', msg: '新疆信息'  }, { name: '江苏' , msg: '江苏信息' }, { name: '浙江', msg: '浙江信息'  }, 
+  { name: '江西', msg: '江西信息'  }, { name: '湖北', msg: '湖北信息'  }, { name: '广西', msg: '广西信息'  }, 
+  { name: '甘肃', msg: '甘肃信息'  }, { name: '山西', msg: '山西信息'  }, { name: '内蒙古', msg: '内蒙古信息'}, 
+  { name: '陕西', msg: '陕西信息'  }, { name: '吉林', msg: '吉林信息'  }, { name: '福建', msg: '福建信息'  }, 
+  { name: '贵州', msg: '贵州信息'  }, {name: '广东', msg: '广东信息'   }, { name: '青海', msg: '青海信息'  }, 
+  { name: '西藏', msg: '西藏信息'  }, { name: '四川', msg: '四川信息'  }, { name: '宁夏', msg: '宁夏信息'  }, 
+  { name: '海南', msg: '海南信息'  }, { name: '台湾', msg: '台湾信息'  }, { name: '香港', msg: '香港信息'  }, 
+  { name: '澳门', msg: '澳门信息'  }, { name: '南海诸岛', msg:'南海诸岛信息' }];
+
+  function showdata(name){
+    var year = document.getElementById('year').value;
+    if(year == '2002')
+    {
+      for(var i=0;i<_02_data.length;i++)
+      {
+        if(_02_data[i].name == name)
+        {
+          return _02_data[i].msg;
+        }
+      }
+    }
+    else if(year == '2003'){
+      for(var i=0;i<_03_data.length;i++)
+      {
+        if(_03_data[i].name == name)
+        {
+          return _03_data[i].msg;
+        }
+      }
+    }
+    else if(year == '2004'){
+      for(var i=0;i<_04_data.length;i++)
+      {
+        if(_04_data[i].name == name)
+        {
+          return _04_data[i].msg;
+        }
+      }
+    }
+    else if(year == '2005'){
+      for(var i=0;i<_05_data.length;i++)
+      {
+        if(_05_data[i].name == name)
+        {
+          return _05_data[i].msg;
+        }
+      }
+    }
+    else if(year == '2006'){
+      for(var i=0;i<_06_data.length;i++)
+      {
+        if(_06_data[i].name == name)
+        {
+          return _06_data[i].msg;
+        }
+      }
+    }
+    else if(year == '2007'){
+      for(var i=0;i<_07_data.length;i++)
+      {
+        if(_07_data[i].name == name)
+        {
+          return _07_data[i].msg;
+        }
+      }
+    }
+    else if(year == '2008'){
+      for(var i=0;i<_08_data.length;i++)
+      {
+        if(_08_data[i].name == name)
+        {
+          return _08_data[i].msg;
+        }
+      }
+    }
+    else if(year == '2009'){
+      for(var i=0;i<_09_data.length;i++)
+      {
+        if(_09_data[i].name == name)
+        {
+          return _09_data[i].msg;
+        }
+      }
+    }
+    else if(year == '2010'){
+      for(var i=0;i<_10_data.length;i++)
+      {
+        if(_10_data[i].name == name)
+        {
+          return _10_data[i].msg;
+        }
+      }
+    }
+    else if(year == '2011'){
+      for(var i=0;i<_11_data.length;i++)
+      {
+        if(_11_data[i].name == name)
+        {
+          return _11_data[i].msg;
+        }
+      }
+    }
+    else if(year == '2012'){
+      for(var i=0;i<_12_data.length;i++)
+      {
+        if(_12_data[i].name == name)
+        {
+          return _12_data[i].msg;
+        }
+      }
+    }
+    else if(year == '2013'){
+      for(var i=0;i<_13_data.length;i++)
+      {
+        if(_13_data[i].name == name)
+        {
+          return _13_data[i].msg;
+        }
+      }
+    }
+    else if(year == '2014'){
+      for(var i=0;i<_14_data.length;i++)
+      {
+        if(_14_data[i].name == name)
+        {
+          return _14_data[i].msg;
+        }
+      }
+    }
+    else if(year == '2015'){
+      for(var i=0;i<_15_data.length;i++)
+      {
+        if(_15_data[i].name == name)
+        {
+          return _15_data[i].msg;
+        }
+      }
+    }
+    else if(year == '2010'){
+      for(var i=0;i<_16_data.length;i++)
+      {
+        if(_16_data[i].name == name)
+        {
+          return _16_data[i].msg;
+        }
+      }
+    }
+    else if(year == '2017'){
+      for(var i=0;i<_17_data.length;i++)
+      {
+        if(_17_data[i].name == name)
+        {
+          return _17_data[i].msg;
+        }
+      }
+    }
+    else if(year == '2018'){
+      for(var i=0;i<_18_data.length;i++)
+      {
+        if(_18_data[i].name == name)
+        {
+          return _18_data[i].msg;
+        }
+      }
+    }
+    else if(year == '2019'){
+      for(var i=0;i<_19_data.length;i++)
+      {
+        if(_19_data[i].name == name)
+        {
+          return _19_data[i].msg;
+        }
+      }
+    }
+    else if(year == '2020'){
+      for(var i=0;i<_20_data.length;i++)
+      {
+        if(_20_data[i].name == name)
+        {
+          return _20_data[i].msg;
+        }
+      }
+    }
+    else if(year == '2021'){
+      for(var i=0;i<_21_data.length;i++)
+      {
+        if(_21_data[i].name == name)
+        {
+          return _21_data[i].msg;
+        }
+      }
+    }
+    else if(year == '2022'){
+      for(var i=0;i<_22_data.length;i++)
+      {
+        if(_22_data[i].name == name)
+        {
+          return _22_data[i].msg;
+        }
+      }
+    }
+    else{
+      return '请正确选择年份'
+    }
+  }
+
+</script>
+
+</body>
+</html>
