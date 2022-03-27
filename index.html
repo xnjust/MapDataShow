@@ -78,9 +78,42 @@
 
 <script type="text/javascript">
   // 全国省份列表
-  var dataMap = [{ name: '北京' }, { name: '天津' }, { name: '上海' }, { name: '重庆' }, { name: '河北' }, { name: '河南' }, { name: '云南' }, { name: '辽宁' }, { name: '黑龙江' }, { name: '湖南' }, { name: '安徽' }, { name: '山东' },
-  { name: '新疆' }, { name: '江苏' }, { name: '浙江' }, { name: '江西' }, { name: '湖北' }, { name: '广西' }, { name: '甘肃' }, { name: '山西' }, { name: '内蒙古' }, { name: '陕西' }, { name: '吉林' }, { name: '福建' }, { name: '贵州' },
-  { name: '广东' }, { name: '青海' }, { name: '西藏' }, { name: '四川' }, { name: '宁夏' }, { name: '海南' }, { name: '台湾' }, { name: '香港' }, { name: '澳门' }, { name: '南海诸岛' }]
+  var dataMap = [{name: '北京',value: Math.round(Math.random()*2000)},
+                    {name: '天津',value: Math.round(Math.random()*2000)},
+                    {name: '上海',value: Math.round(Math.random()*2000)},
+                    {name: '重庆',value: Math.round(Math.random()*2000)},
+                    {name: '河北',value: Math.round(Math.random()*2000)},
+                    {name: '河南',value: Math.round(Math.random()*2000)},
+                    {name: '云南',value: Math.round(Math.random()*2000)},
+                    {name: '辽宁',value: Math.round(Math.random()*2000)},
+                    {name: '黑龙江',value: Math.round(Math.random()*2000)},
+                    {name: '湖南',value: Math.round(Math.random()*2000)},
+                    {name: '安徽',value: Math.round(Math.random()*2000)},
+                    {name: '山东',value: Math.round(Math.random()*2000)},
+                    {name: '新疆',value: Math.round(Math.random()*2000)},
+                    {name: '江苏',value: Math.round(Math.random()*2000)},
+                    {name: '浙江',value: Math.round(Math.random()*2000)},
+                    {name: '江西',value: Math.round(Math.random()*2000)},
+                    {name: '湖北',value: Math.round(Math.random()*2000)},
+                    {name: '广西',value: Math.round(Math.random()*2000)},
+                    {name: '甘肃',value: Math.round(Math.random()*2000)},
+                    {name: '山西',value: Math.round(Math.random()*2000)},
+                    {name: '内蒙古',value: Math.round(Math.random()*2000)},
+                    {name: '陕西',value: Math.round(Math.random()*2000)},
+                    {name: '吉林',value: Math.round(Math.random()*2000)},
+                    {name: '福建',value: Math.round(Math.random()*2000)},
+                    {name: '贵州',value: Math.round(Math.random()*2000)},
+                    {name: '广东',value: Math.round(Math.random()*2000)},
+                    {name: '青海',value: Math.round(Math.random()*2000)},
+                    {name: '西藏',value: Math.round(Math.random()*2000)},
+                    {name: '四川',value: Math.round(Math.random()*2000)},
+                    {name: '宁夏',value: Math.round(Math.random()*2000)},
+                    {name: '海南',value: Math.round(Math.random()*2000)},
+                    {name: '台湾',value: Math.round(Math.random()*2000)},
+                    {name: '香港',value: Math.round(Math.random()*2000)},
+                    {name: '澳门',value: Math.round(Math.random()*2000)},
+                    {name: '南海诸岛',value: Math.round(Math.random()*2000)},
+                  ]
   // 需要在页面上直接标记出来的城市
   var specialMap = [];
   // 对dataMap进行处理，使其可以直接在页面上展示
@@ -100,9 +133,24 @@
               var info = '<p style="font-size:18px">' + params.name + '</p><p style="font-size:14px">'+showdata(params.name)+'</p>'
               return info;
           },
-          backgroundColor: "#0066cc",//提示标签背景颜色
+          backgroundColor: "#742674",//提示标签背景颜色
           textStyle: { color: "#fff" } //提示标签字体颜色
       },
+      visualMap: {//颜色的设置  dataRange
+            show: false,
+            x: 'left',
+            y: 'center',
+            splitList: [
+                {start: 1500},
+                {start: 900, end: 1500},
+                {start: 310, end: 1000},
+                {start: 200, end: 300},
+                {start: 10, end: 200},
+                {start: 5, end: 10},
+                {end: 10}
+            ],
+            color: ['#5bc2e7', '#6980c5', '#70dfdf', '#f7f1ee', '#3390FF']
+        },
       series: [
           {
               name: '中国',
